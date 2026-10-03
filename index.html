@@ -3,20 +3,21 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#05070b">
+<meta name="theme-color" content="#030508">
 <meta name="description" content="RAY MUSIC V3 - Music Player">
 <title>RAY MUSIC V3</title>
 
 <style>
 :root{
-    --bg:#05070b;
-    --panel:#0b1018;
-    --panel2:#101722;
-    --text:#f5f7fb;
-    --muted:#8d98a8;
-    --blue:#09a9ff;
-    --line:rgba(255,255,255,.08);
-    --nav:rgba(5,7,11,.88);
+    --bg:#030508;
+    --panel:#080c14;
+    --panel2:#0d131f;
+    --text:#f8fafc;
+    --muted:#94a3b8;
+    --blue:#38bdf8;
+    --blue-glow:rgba(56, 189, 248, 0.25);
+    --line:rgba(255,255,255,0.06);
+    --nav:rgba(3, 5, 8, 0.85);
 }
 
 *{
@@ -30,11 +31,11 @@ html{
 }
 
 body{
-    font-family:Arial,Helvetica,sans-serif;
+    font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     background:var(--bg);
     color:var(--text);
     min-height:100vh;
-    padding-bottom:105px;
+    padding-bottom:115px;
 }
 
 button,
@@ -53,10 +54,10 @@ img{
 }
 
 .app{
-    width:min(1250px,100%);
+    width:min(1280px,100%);
     margin:auto;
-    padding-left:22px;
-    padding-right:22px;
+    padding-left:24px;
+    padding-right:24px;
 }
 
 /* =========================
@@ -64,7 +65,7 @@ img{
 ========================= */
 
 .topbar{
-    height:74px;
+    height:76px;
     display:flex;
     align-items:center;
     justify-content:space-between;
@@ -74,15 +75,16 @@ img{
     z-index:30;
 
     background:var(--nav);
-    backdrop-filter:blur(18px);
+    backdrop-filter:blur(20px);
+    -webkit-backdrop-filter:blur(20px);
 
     border-bottom:1px solid var(--line);
 }
 
 .logo{
     font-size:22px;
-    font-weight:900;
-    letter-spacing:2px;
+    font-weight:800;
+    letter-spacing:1.5px;
 }
 
 .logo span{
@@ -91,24 +93,25 @@ img{
 
 .top-actions{
     display:flex;
-    gap:9px;
+    gap:10px;
 }
 
 .circle{
-    width:40px;
-    height:40px;
-
-    border-radius:50%;
-
-    background:#111824;
-
+    width:42px;
+    height:42px;
+    border-radius:12px;
+    background:var(--panel2);
     border:1px solid var(--line);
-
-    transition:.2s;
+    display:grid;
+    place-items:center;
+    transition:all .25s ease;
 }
 
 .circle:hover{
     background:var(--blue);
+    color:#030508;
+    border-color:var(--blue);
+    transform:translateY(-2px);
 }
 
 /* =========================
@@ -116,31 +119,34 @@ img{
 ========================= */
 
 .page{
-    padding-top:30px;
-    padding-bottom:40px;
+    padding-top:32px;
+    padding-bottom:48px;
 }
 
 .hero{
-    padding:18px 0 28px;
+    padding:12px 0 24px;
 }
 
 .eyebrow{
     color:var(--blue);
-    font-size:12px;
-    font-weight:800;
-    letter-spacing:1.6px;
+    font-size:11px;
+    font-weight:700;
+    letter-spacing:2px;
+    text-transform:uppercase;
+    margin-bottom:8px;
 }
 
 .hero h1{
-    font-size:clamp(38px,6vw,65px);
-    line-height:1;
-    margin-top:9px;
-    letter-spacing:-2px;
+    font-size:clamp(36px, 5vw, 56px);
+    line-height:1.05;
+    letter-spacing:-1px;
+    font-weight:800;
 }
 
 .hero p{
     color:var(--muted);
-    margin-top:14px;
+    margin-top:10px;
+    font-size:15px;
 }
 
 /* =========================
@@ -149,39 +155,34 @@ img{
 
 .search{
     position:relative;
-    margin-top:23px;
-    max-width:650px;
+    margin-top:24px;
+    max-width:600px;
 }
 
 .search input{
     width:100%;
-    height:54px;
-
-    border-radius:17px;
-
+    height:52px;
+    border-radius:14px;
     border:1px solid var(--line);
-
     outline:none;
-
-    background:#0c121b;
-
-    color:white;
-
-    padding:0 18px 0 48px;
+    background:var(--panel);
+    color:var(--text);
+    padding:0 20px 0 48px;
+    transition:all .25s ease;
 }
 
 .search input:focus{
-    border-color:rgba(9,169,255,.6);
+    border-color:var(--blue);
+    box-shadow:0 0 0 4px var(--blue-glow);
 }
 
 .search span{
     position:absolute;
-    left:17px;
-    top:15px;
-
+    left:16px;
+    top:50%;
+    transform:translateY(-50%);
     color:var(--muted);
-
-    font-size:20px;
+    font-size:18px;
 }
 
 /* =========================
@@ -189,19 +190,20 @@ img{
 ========================= */
 
 .section{
-    margin-top:28px;
+    margin-top:36px;
 }
 
 .section-head{
     display:flex;
     align-items:center;
     justify-content:space-between;
-
-    margin-bottom:15px;
+    margin-bottom:16px;
 }
 
 .section h2{
-    font-size:20px;
+    font-size:18px;
+    font-weight:700;
+    letter-spacing:-0.3px;
 }
 
 .muted{
@@ -216,40 +218,34 @@ img{
 .quick{
     display:grid;
     grid-template-columns:repeat(4,1fr);
-    gap:12px;
+    gap:14px;
 }
 
 .quick button{
     text-align:left;
-
     padding:18px;
-
-    border-radius:17px;
-
-    background:
-        linear-gradient(
-            135deg,
-            #101a27,
-            #0b1018
-        );
-
+    border-radius:16px;
+    background:linear-gradient(135deg, var(--panel2), var(--panel));
     border:1px solid var(--line);
-
-    transition:.2s;
+    transition:all .25s ease;
 }
 
 .quick button:hover{
-    transform:translateY(-2px);
-    border-color:rgba(9,169,255,.3);
+    transform:translateY(-3px);
+    border-color:rgba(56, 189, 248, 0.3);
+    box-shadow:0 8px 20px rgba(0,0,0,0.3);
 }
 
 .quick b{
     display:block;
-    margin-top:8px;
+    margin-top:10px;
+    font-size:14px;
+    font-weight:600;
 }
 
 .quick small{
     color:var(--muted);
+    font-size:12px;
 }
 
 /* =========================
@@ -259,58 +255,60 @@ img{
 .grid{
     display:grid;
     grid-template-columns:repeat(5,1fr);
-    gap:16px;
+    gap:18px;
 }
 
 .card{
     min-width:0;
+    background:var(--panel);
+    border:1px solid var(--line);
+    padding:12px;
+    border-radius:18px;
+    transition:all .25s ease;
+}
+
+.card:hover{
+    background:var(--panel2);
+    border-color:rgba(255,255,255,0.1);
+    transform:translateY(-4px);
+    box-shadow:0 10px 25px rgba(0,0,0,0.4);
 }
 
 .art{
     position:relative;
-
     aspect-ratio:1;
-
     overflow:hidden;
-
-    border-radius:17px;
-
+    border-radius:12px;
     background:#111824;
 }
 
 .art img{
     width:100%;
     height:100%;
-
     object-fit:cover;
-
-    transition:.3s;
+    transition:transform .4s ease;
 }
 
 .card:hover .art img{
-    transform:scale(1.04);
+    transform:scale(1.06);
 }
 
 .play-float{
     position:absolute;
-
     right:10px;
     bottom:10px;
-
-    width:44px;
-    height:44px;
-
+    width:40px;
+    height:40px;
     border-radius:50%;
-
     background:var(--blue);
-
-    color:white;
-
+    color:#030508;
+    display:grid;
+    place-items:center;
     opacity:0;
-
-    transform:translateY(6px);
-
-    transition:.2s;
+    transform:translateY(8px);
+    transition:all .25s ease;
+    box-shadow:0 4px 12px rgba(0,0,0,0.4);
+    font-weight:bold;
 }
 
 .card:hover .play-float{
@@ -319,28 +317,20 @@ img{
 }
 
 .card-title{
-    font-weight:750;
-
-    margin-top:10px;
-
+    font-weight:650;
+    font-size:14px;
+    margin-top:12px;
     white-space:nowrap;
-
     overflow:hidden;
-
     text-overflow:ellipsis;
 }
 
 .card-sub{
-    font-size:13px;
-
+    font-size:12px;
     color:var(--muted);
-
-    margin-top:4px;
-
+    margin-top:3px;
     white-space:nowrap;
-
     overflow:hidden;
-
     text-overflow:ellipsis;
 }
 
@@ -358,82 +348,68 @@ img{
 
 .result{
     display:flex;
-
     align-items:center;
-
-    gap:13px;
-
-    padding:10px;
-
+    gap:14px;
+    padding:10px 14px;
     border-radius:14px;
-
-    transition:.2s;
+    transition:background .2s ease;
 }
 
 .result:hover{
-    background:#0d141e;
+    background:var(--panel2);
 }
 
 .result img{
-    width:54px;
-    height:54px;
-
+    width:50px;
+    height:50px;
     border-radius:10px;
-
     object-fit:cover;
-
     background:#111824;
 }
 
 .result-main{
     flex:1;
-
     min-width:0;
 }
 
 .result-title{
-    font-weight:750;
-
+    font-weight:650;
+    font-size:14px;
     white-space:nowrap;
-
     overflow:hidden;
-
     text-overflow:ellipsis;
 }
 
 .result-sub{
     font-size:12px;
-
     color:var(--muted);
-
-    margin-top:4px;
+    margin-top:3px;
 }
 
 .result button{
-    width:38px;
-    height:38px;
-
+    width:36px;
+    height:36px;
     border-radius:50%;
-
-    background:#121c28;
-
+    background:var(--panel2);
     border:1px solid var(--line);
+    display:grid;
+    place-items:center;
+    transition:all .2s ease;
 }
 
 .result button:hover{
     background:var(--blue);
+    color:#030508;
+    border-color:var(--blue);
 }
 
 .empty{
-    padding:28px;
-
+    padding:32px;
     text-align:center;
-
     color:var(--muted);
-
     border:1px dashed var(--line);
-
     border-radius:16px;
+    font-size:14px;
 }
 
 /* =========================
@@ -442,161 +418,127 @@ img{
 
 .player{
     position:fixed;
-
     left:0;
     right:0;
     bottom:0;
-
     z-index:50;
-
-    background:rgba(6,9,14,.94);
-
-    backdrop-filter:blur(22px);
-
+    background:rgba(5, 8, 13, 0.92);
+    backdrop-filter:blur(24px);
+    -webkit-backdrop-filter:blur(24px);
     border-top:1px solid var(--line);
 }
 
 .player-inner{
-    width:min(1250px,100%);
-
+    width:min(1280px,100%);
     margin:auto;
-
-    padding:10px 22px;
-
+    padding:12px 24px;
     display:grid;
-
-    grid-template-columns:
-        1.1fr
-        1.5fr
-        1fr;
-
+    grid-template-columns:1.2fr 1.6fr 1fr;
     align-items:center;
-
-    gap:18px;
+    gap:20px;
 }
 
 .now{
     display:flex;
-
     align-items:center;
-
-    gap:12px;
-
+    gap:14px;
     min-width:0;
 }
 
 .now img{
-    width:54px;
-    height:54px;
-
+    width:52px;
+    height:52px;
     border-radius:10px;
-
     object-fit:cover;
-
     background:#111824;
 }
 
 .now-text{
     min-width:0;
+    flex:1;
 }
 
 .now-title{
-    font-weight:800;
-
+    font-weight:700;
+    font-size:14px;
     white-space:nowrap;
-
     overflow:hidden;
-
     text-overflow:ellipsis;
 }
 
 .now-artist{
     font-size:12px;
-
     color:var(--muted);
-
-    margin-top:4px;
-
+    margin-top:3px;
     white-space:nowrap;
-
     overflow:hidden;
-
     text-overflow:ellipsis;
+}
+
+.ctrl{
+    width:36px;
+    height:36px;
+    border-radius:50%;
+    background:transparent;
+    font-size:15px;
+    display:grid;
+    place-items:center;
+    transition:background .2s ease;
+}
+
+.ctrl:hover{
+    background:var(--panel2);
 }
 
 .controls{
     display:flex;
-
     justify-content:center;
-
     align-items:center;
-
-    gap:14px;
-}
-
-.ctrl{
-    width:38px;
-    height:38px;
-
-    border-radius:50%;
-
-    background:transparent;
-
-    font-size:17px;
-}
-
-.ctrl:hover{
-    background:#121b27;
+    gap:12px;
 }
 
 .main-play{
-    width:45px;
-    height:45px;
-
+    width:42px;
+    height:42px;
     border-radius:50%;
-
-    background:white;
-
-    color:#05070b;
-
+    background:var(--text);
+    color:var(--bg);
     font-weight:900;
+    display:grid;
+    place-items:center;
+    transition:transform .2s ease;
+}
+
+.main-play:hover{
+    transform:scale(1.05);
 }
 
 .progress-row{
     display:flex;
-
     align-items:center;
-
-    gap:9px;
-
-    margin-top:5px;
-
+    gap:10px;
+    margin-top:6px;
     color:var(--muted);
-
-    font-size:10px;
+    font-size:11px;
 }
 
 .range{
     width:100%;
-
     accent-color:var(--blue);
-
     cursor:pointer;
+    height:4px;
 }
 
 .player-right{
     display:flex;
-
     justify-content:flex-end;
-
     align-items:center;
-
-    gap:12px;
+    gap:10px;
+    color:var(--muted);
 }
 
 .player-right input{
-    width:100px;
-
+    width:110px;
     accent-color:var(--blue);
 }
 
@@ -614,35 +556,24 @@ img{
 
 .toast{
     position:fixed;
-
     left:50%;
-    bottom:110px;
-
-    transform:
-        translate(-50%,20px);
-
+    bottom:115px;
+    transform:translate(-50%, 20px);
     opacity:0;
-
-    background:#101824;
-
+    background:var(--panel2);
     border:1px solid var(--line);
-
-    padding:11px 15px;
-
+    padding:10px 18px;
     border-radius:12px;
-
     z-index:100;
-
-    transition:.2s;
-
+    transition:all .25s ease;
     font-size:13px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.5);
+    pointer-events:none;
 }
 
 .toast.show{
     opacity:1;
-
-    transform:
-        translate(-50%,0);
+    transform:translate(-50%, 0);
 }
 
 /* =========================
@@ -651,17 +582,12 @@ img{
 
 .modal{
     position:fixed;
-
     inset:0;
-
-    background:rgba(0,0,0,.72);
-
+    background:rgba(0,0,0,0.75);
+    backdrop-filter:blur(6px);
     z-index:80;
-
     display:none;
-
     place-items:center;
-
     padding:20px;
 }
 
@@ -670,183 +596,136 @@ img{
 }
 
 .modal-box{
-    width:min(500px,100%);
-
-    background:#0b1018;
-
+    width:min(480px,100%);
+    background:var(--panel);
     border:1px solid var(--line);
-
-    border-radius:22px;
-
-    padding:22px;
+    border-radius:20px;
+    padding:24px;
+    box-shadow:0 20px 40px rgba(0,0,0,0.6);
 }
 
 .modal-head{
     display:flex;
-
     align-items:center;
-
     justify-content:space-between;
+    margin-bottom:20px;
+}
 
-    margin-bottom:18px;
+.modal-head h2{
+    font-size:18px;
+    font-weight:700;
 }
 
 .close{
-    width:35px;
-    height:35px;
-
+    width:34px;
+    height:34px;
     border-radius:50%;
+    background:var(--panel2);
+    font-size:18px;
+    display:grid;
+    place-items:center;
+    transition:background .2s ease;
+}
 
-    background:#151e29;
-
-    font-size:20px;
+.close:hover{
+    background:rgba(255,255,255,0.1);
 }
 
 .upload{
-    border:1px dashed #33465a;
-
-    border-radius:16px;
-
-    padding:25px;
-
+    border:1px dashed rgba(255,255,255,0.15);
+    border-radius:14px;
+    padding:24px;
     text-align:center;
-
     color:var(--muted);
+    font-size:13px;
+    background:var(--panel2);
 }
 
 .upload input{
-    margin-top:15px;
+    margin-top:14px;
+    font-size:12px;
 }
 
 /* =========================
    RESPONSIVE
 ========================= */
 
-@media(max-width:1000px){
-
+@media(max-width:1024px){
     .grid{
-        grid-template-columns:repeat(4,1fr);
+        grid-template-columns:repeat(3,1fr);
     }
-
     .player-inner{
-        grid-template-columns:
-            1fr
-            1.2fr;
+        grid-template-columns:1.2fr 1.5fr;
     }
-
     .player-right{
         display:none;
     }
-
 }
 
-@media(max-width:700px){
-
+@media(max-width:768px){
     body{
-        padding-bottom:175px;
+        padding-bottom:170px;
     }
-
     .app{
-        padding-left:15px;
-        padding-right:15px;
+        padding-left:16px;
+        padding-right:16px;
     }
-
     .topbar{
-        height:65px;
+        height:64px;
     }
-
     .hero h1{
-        font-size:43px;
+        font-size:36px;
     }
-
     .quick{
         grid-template-columns:repeat(2,1fr);
     }
-
     .grid{
         grid-template-columns:repeat(2,1fr);
-        gap:14px;
+        gap:12px;
     }
-
     .player{
-        bottom:58px;
+        bottom:56px;
     }
-
     .player-inner{
         grid-template-columns:1fr;
-
-        padding:8px 15px;
+        padding:8px 16px;
+        gap:8px;
     }
-
     .player-center{
         grid-row:2;
     }
-
-    .player-right{
-        display:none;
-    }
-
     .now img{
-        width:46px;
-        height:46px;
+        width:44px;
+        height:44px;
     }
-
     .bottom-nav{
         position:fixed;
-
         display:flex;
-
         left:0;
         right:0;
         bottom:0;
-
-        height:58px;
-
-        background:#070a10;
-
+        height:56px;
+        background:var(--bg);
         border-top:1px solid var(--line);
-
         z-index:60;
-
         justify-content:space-around;
+        align-items:center;
     }
-
     .bottom-nav button{
         background:transparent;
-
-        color:#778496;
-
+        color:var(--muted);
         font-size:11px;
+        display:flex;
+        flex-direction:column;
+        align-items:center;
+        gap:2px;
     }
-
     .bottom-nav button.active{
-        color:white;
+        color:var(--blue);
     }
-
     .bottom-nav span{
-        display:block;
-
-        font-size:19px;
-
-        margin-bottom:2px;
+        font-size:18px;
     }
-
-}
-
-@media(max-width:380px){
-
-    .quick{
-        gap:8px;
-    }
-
-    .quick button{
-        padding:14px;
-    }
-
-    .controls{
-        gap:8px;
-    }
-
 }
 </style>
 </head>
@@ -858,1710 +737,511 @@ img{
 ========================= -->
 
 <header class="topbar app">
-
     <div class="logo">
         RAY<span>MUSIC</span>
     </div>
-
     <div class="top-actions">
-
-        <button
-            class="circle"
-            onclick="sharePage()"
-            title="Bagikan">
-            ↗
-        </button>
-
-        <button
-            class="circle"
-            onclick="openUpload()"
-            title="Tambah lagu">
-            ＋
-        </button>
-
+        <button class="circle" onclick="sharePage()" title="Bagikan">↗</button>
+        <button class="circle" onclick="openUpload()" title="Tambah lagu">＋</button>
     </div>
-
 </header>
-
 
 <!-- =========================
      MAIN
 ========================= -->
 
 <main class="app page">
-
 <section id="homeSection">
-
     <div class="hero">
-
-        <div class="eyebrow">
-            RAY MUSIC V3
-        </div>
-
-        <h1>
-            Music for<br>
-            your mood.
-        </h1>
-
-        <p>
-            Dengarkan koleksi musikmu dalam satu tampilan
-            yang simpel dan modern.
-        </p>
-
+        <div class="eyebrow">RAY MUSIC V3</div>
+        <h1>Music for<br>your mood.</h1>
+        <p>Dengarkan koleksi musikmu dalam satu tampilan yang simpel dan modern.</p>
         <div class="search">
-
             <span>⌕</span>
-
-            <input
-                id="searchInput"
-                type="text"
-                placeholder="Cari lagu, artis, atau album..."
-                autocomplete="off"
-            >
-
+            <input id="searchInput" type="text" placeholder="Cari lagu, artis, atau album..." autocomplete="off">
         </div>
-
     </div>
 
-
     <!-- SEARCH RESULT -->
-
-    <section
-        id="resultsSection"
-        class="section results">
-
+    <section id="resultsSection" class="section results">
         <div class="section-head">
-
-            <h2>
-                Hasil pencarian
-            </h2>
-
-            <span
-                id="resultCount"
-                class="muted">
-            </span>
-
+            <h2>Hasil pencarian</h2>
+            <span id="resultCount" class="muted"></span>
         </div>
-
         <div id="results"></div>
-
     </section>
-
 
     <!-- QUICK PICKS -->
-
     <section class="section">
-
         <div class="section-head">
-
-            <h2>
-                Quick picks
-            </h2>
-
-            <span class="muted">
-                RAY MUSIC
-            </span>
-
+            <h2>Quick picks</h2>
+            <span class="muted">RAY MUSIC</span>
         </div>
-
         <div class="quick">
-
             <button onclick="showCategory()">
-
                 🎧
-
-                <b>
-                    Semua Lagu
-                </b>
-
-                <small>
-                    Koleksi utama
-                </small>
-
+                <b>Semua Lagu</b>
+                <small>Koleksi utama</small>
             </button>
-
-
             <button onclick="showFavorites()">
-
                 ♥
-
-                <b>
-                    Favorit
-                </b>
-
-                <small>
-                    Lagu yang kamu suka
-                </small>
-
+                <b>Favorit</b>
+                <small>Lagu yang kamu suka</small>
             </button>
-
-
             <button onclick="shuffleAll()">
-
                 🔀
-
-                <b>
-                    Shuffle
-                </b>
-
-                <small>
-                    Putar acak
-                </small>
-
+                <b>Shuffle</b>
+                <small>Putar acak</small>
             </button>
-
-
             <button onclick="openUpload()">
-
                 ＋
-
-                <b>
-                    Musik Lokal
-                </b>
-
-                <small>
-                    Tambahkan dari HP
-                </small>
-
+                <b>Musik Lokal</b>
+                <small>Tambahkan dari HP</small>
             </button>
-
         </div>
-
     </section>
-
 
     <!-- SONGS -->
-
     <section class="section">
-
         <div class="section-head">
-
-            <h2>
-                Untuk kamu
-            </h2>
-
-            <span class="muted">
-                Featured
-            </span>
-
+            <h2>Untuk kamu</h2>
+            <span class="muted">Featured</span>
         </div>
-
-        <div
-            id="songGrid"
-            class="grid">
-        </div>
-
+        <div id="songGrid" class="grid"></div>
     </section>
-
 </section>
-
 
 <!-- =========================
      LIBRARY
 ========================= -->
-
-<section
-    id="librarySection"
-    class="section"
-    style="display:none">
-
+<section id="librarySection" class="section" style="display:none">
     <div class="hero">
-
-        <div class="eyebrow">
-            LIBRARY
-        </div>
-
-        <h1>
-            Koleksimu.
-        </h1>
-
-        <p>
-            Lagu favorit yang tersimpan di perangkat ini.
-        </p>
-
+        <div class="eyebrow">LIBRARY</div>
+        <h1>Koleksimu.</h1>
+        <p>Lagu favorit yang tersimpan di perangkat ini.</p>
     </div>
-
-    <div
-        id="libraryGrid"
-        class="grid">
-    </div>
-
+    <div id="libraryGrid" class="grid"></div>
 </section>
-
 </main>
-
 
 <!-- =========================
      PLAYER
 ========================= -->
-
 <div class="player">
-
 <div class="player-inner">
-
     <div class="now">
-
-        <img
-            id="nowCover"
-            src="https://images.unsplash.com/photo-1511379938547-c1f69419868d?auto=format&fit=crop&w=500&q=80"
-            alt="Cover">
-
+        <img id="nowCover" src="https://images.unsplash.com/photo-1511379938547-c1f69419868d?auto=format&fit=crop&w=500&q=80" alt="Cover">
         <div class="now-text">
-
-            <div
-                id="nowTitle"
-                class="now-title">
-                Belum ada lagu
-            </div>
-
-            <div
-                id="nowArtist"
-                class="now-artist">
-                Pilih lagu untuk mulai
-            </div>
-
+            <div id="nowTitle" class="now-title">Belum ada lagu</div>
+            <div id="nowArtist" class="now-artist">Pilih lagu untuk mulai</div>
         </div>
-
-        <button
-            class="ctrl"
-            onclick="toggleFavoriteCurrent()"
-            title="Favorit">
-            ♥
-        </button>
-
+        <button class="ctrl" onclick="toggleFavoriteCurrent()" title="Favorit">♥</button>
     </div>
-
 
     <div class="player-center">
-
         <div class="controls">
-
-            <button
-                class="ctrl"
-                onclick="toggleShuffle()">
-                🔀
-            </button>
-
-            <button
-                class="ctrl"
-                onclick="prevSong()">
-                ⏮
-            </button>
-
-            <button
-                id="playBtn"
-                class="main-play"
-                onclick="togglePlay()">
-                ▶
-            </button>
-
-            <button
-                class="ctrl"
-                onclick="nextSong()">
-                ⏭
-            </button>
-
-            <button
-                class="ctrl"
-                onclick="toggleRepeat()">
-                🔁
-            </button>
-
+            <button class="ctrl" onclick="toggleShuffle()">🔀</button>
+            <button class="ctrl" onclick="prevSong()">⏮</button>
+            <button id="playBtn" class="main-play" onclick="togglePlay()">▶</button>
+            <button class="ctrl" onclick="nextSong()">⏭</button>
+            <button class="ctrl" onclick="toggleRepeat()">🔁</button>
         </div>
-
-
         <div class="progress-row">
-
-            <span id="cur">
-                0:00
-            </span>
-
-            <input
-                id="progress"
-                class="range"
-                type="range"
-                min="0"
-                max="100"
-                value="0">
-
-            <span id="dur">
-                0:00
-            </span>
-
+            <span id="cur">0:00</span>
+            <input id="progress" class="range" type="range" min="0" max="100" value="0">
+            <span id="dur">0:00</span>
         </div>
-
     </div>
-
 
     <div class="player-right">
-
-        <span>
-            🔊
-        </span>
-
-        <input
-            id="volume"
-            type="range"
-            min="0"
-            max="1"
-            step=".01"
-            value=".8">
-
+        <span>🔊</span>
+        <input id="volume" type="range" min="0" max="1" step=".01" value=".8">
     </div>
-
 </div>
-
 </div>
-
 
 <!-- =========================
      MOBILE NAV
 ========================= -->
-
 <nav class="bottom-nav">
-
-    <button
-        id="homeNav"
-        class="active"
-        onclick="showHome()">
-
-        <span>⌂</span>
-
-        Home
-
+    <button id="homeNav" class="active" onclick="showHome()">
+        <span>⌂</span>Home
     </button>
-
-
     <button onclick="focusSearch()">
-
-        <span>⌕</span>
-
-        Search
-
+        <span>⌕</span>Search
     </button>
-
-
     <button onclick="showFavorites()">
-
-        <span>♥</span>
-
-        Library
-
+        <span>♥</span>Library
     </button>
-
 </nav>
-
 
 <!-- =========================
      UPLOAD MODAL
 ========================= -->
-
-<div
-    id="uploadModal"
-    class="modal">
-
+<div id="uploadModal" class="modal">
     <div class="modal-box">
-
         <div class="modal-head">
-
-            <h2>
-                Musik Lokal
-            </h2>
-
-            <button
-                class="close"
-                onclick="closeUpload()">
-                ×
-            </button>
-
+            <h2>Musik Lokal</h2>
+            <button class="close" onclick="closeUpload()">×</button>
         </div>
-
         <div class="upload">
-
-            File audio yang dipilih hanya
-            diputar di perangkat ini.
-
+            File audio yang dipilih hanya diputar di perangkat ini.
             <br>
-
-            <input
-                id="fileInput"
-                type="file"
-                accept="audio/*"
-                multiple>
-
+            <input id="fileInput" type="file" accept="audio/*" multiple>
         </div>
-
     </div>
-
 </div>
 
-
-<div
-    id="toast"
-    class="toast">
-</div>
-
-
-<audio
-    id="audio"
-    preload="metadata">
-</audio>
-
+<div id="toast" class="toast"></div>
+<audio id="audio" preload="metadata"></audio>
 
 <script>
-
-/* =====================================================
-   RAY MUSIC V3
-   =====================================================
-
-   Kalau kamu punya MP3 sendiri / audio yang memang
-   boleh kamu distribusikan, isi bagian:
-
-   audio: "LINK-MP3-KAMU"
-
-   Contoh:
-
-   audio:
-   "https://domainkamu.com/music/lagu.mp3"
-
-   Jangan menggunakan URL MP3 Spotify/YouTube untuk
-   mengambil atau mengunduh audio berhak cipta.
-===================================================== */
-
-
-/* =====================================================
-   DATABASE LAGU
-===================================================== */
-
+/* Database lagu dengan contoh URL audio publik */
 const songs = [
-
     {
         id:"ray001",
-
-        title:"RAY MUSIC Intro",
-
-        artist:"RAYY",
-
-        album:"RAY MUSIC",
-
-        cover:
-        "https://images.unsplash.com/photo-1511379938547-c1f69419868d?auto=format&fit=crop&w=700&q=80",
-
-        audio:"",
-
-        source:"https://open.spotify.com/"
+        title:"Lofi Study",
+        artist:"Fayde & Friends",
+        album:"Chill Beats",
+        cover:"https://images.unsplash.com/photo-1511379938547-c1f69419868d?auto=format&fit=crop&w=700&q=80",
+        audio:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"
     },
-
-
     {
         id:"ray002",
-
-        title:"Your First Track",
-
-        artist:"RAYY",
-
-        album:"My Collection",
-
-        cover:
-        "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&w=700&q=80",
-
-        audio:"",
-
-        source:"https://open.spotify.com/"
+        title:"Electronic Vibes",
+        artist:"SoundHelix",
+        album:"Synth Collection",
+        cover:"https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&w=700&q=80",
+        audio:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3"
     },
-
-
     {
         id:"ray003",
-
-        title:"Night Vibes",
-
-        artist:"RAYY",
-
-        album:"RAY MUSIC",
-
-        cover:
-        "https://images.unsplash.com/photo-1516280440614-37939bbacd81?auto=format&fit=crop&w=700&q=80",
-
-        audio:"",
-
-        source:"https://open.spotify.com/"
+        title:"Midnight Groove",
+        artist:"Audio Lab",
+        album:"Night Session",
+        cover:"https://images.unsplash.com/photo-1516280440614-37939bbacd81?auto=format&fit=crop&w=700&q=80",
+        audio:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3"
     },
-
-
     {
         id:"ray004",
-
-        title:"Blue Memories",
-
-        artist:"RAYY",
-
-        album:"RAY MUSIC",
-
-        cover:
-        "https://images.unsplash.com/photo-1524368535928-5b5e00ddc76b?auto=format&fit=crop&w=700&q=80",
-
-        audio:"",
-
-        source:"https://open.spotify.com/"
+        title:"Ocean Breeze",
+        artist:"Ambient Dream",
+        album:"Nature Sounds",
+        cover:"https://images.unsplash.com/photo-1524368535928-5b5e00ddc76b?auto=format&fit=crop&w=700&q=80",
+        audio:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3"
     }
-
 ];
 
-
-/* =====================================================
-   PLAYER VARIABLES
-===================================================== */
-
-const audio =
-document.getElementById("audio");
-
+const audio = document.getElementById("audio");
 let current = -1;
-
 let shuffle = false;
-
 let repeat = false;
-
 let localSongs = [];
-
-
-let favorites =
-JSON.parse(
-    localStorage.getItem(
-        "ray_music_favorites"
-    ) || "[]"
-);
-
-
-/* =====================================================
-   ALL SONGS
-===================================================== */
+let favorites = JSON.parse(localStorage.getItem("ray_music_favorites") || "[]");
 
 function allSongs(){
-
-    return [
-        ...songs,
-        ...localSongs
-    ];
-
+    return [...songs, ...localSongs];
 }
-
-
-/* =====================================================
-   FORMAT TIME
-===================================================== */
 
 function formatTime(seconds){
-
-    if(!isFinite(seconds)){
-        return "0:00";
-    }
-
-    const minutes =
-        Math.floor(seconds / 60);
-
-    const secondsLeft =
-        Math.floor(seconds % 60);
-
-    return (
-        minutes +
-        ":" +
-        String(secondsLeft).padStart(2,"0")
-    );
-
+    if(!isFinite(seconds)) return "0:00";
+    const minutes = Math.floor(seconds / 60);
+    const secondsLeft = Math.floor(seconds % 60);
+    return minutes + ":" + String(secondsLeft).padStart(2,"0");
 }
-
-
-/* =====================================================
-   ESCAPE HTML
-===================================================== */
 
 function escapeHTML(value){
-
-    return String(value)
-        .replace(
-            /[&<>"']/g,
-            char => {
-
-                const map = {
-
-                    "&":"&amp;",
-                    "<":"&lt;",
-                    ">":"&gt;",
-                    '"':"&quot;",
-                    "'":"&#039;"
-
-                };
-
-                return map[char];
-
-            }
-        );
-
+    return String(value).replace(/[&<>"']/g, char => {
+        const map = { "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#039;" };
+        return map[char];
+    });
 }
-
-
-/* =====================================================
-   TOAST
-===================================================== */
 
 function toast(message){
-
-    const element =
-        document.getElementById("toast");
-
-    element.textContent =
-        message;
-
+    const element = document.getElementById("toast");
+    element.textContent = message;
     element.classList.add("show");
-
     clearTimeout(window.toastTimer);
-
-    window.toastTimer =
-        setTimeout(() => {
-
-            element.classList.remove("show");
-
-        },1800);
-
+    window.toastTimer = setTimeout(() => {
+        element.classList.remove("show");
+    }, 1800);
 }
-
-
-/* =====================================================
-   FAVORITE
-===================================================== */
 
 function isFavorite(id){
-
     return favorites.includes(id);
-
 }
-
 
 function saveFavorites(){
-
-    localStorage.setItem(
-        "ray_music_favorites",
-        JSON.stringify(favorites)
-    );
-
+    localStorage.setItem("ray_music_favorites", JSON.stringify(favorites));
 }
 
-
-/* =====================================================
-   RENDER SONG GRID
-===================================================== */
-
-function renderGrid(
-    list = allSongs(),
-    target = "songGrid"
-){
-
-    const box =
-        document.getElementById(target);
-
+function renderGrid(list = allSongs(), target = "songGrid"){
+    const box = document.getElementById(target);
     box.innerHTML = "";
-
-
     if(list.length === 0){
-
-        box.innerHTML = `
-            <div class="empty">
-                Belum ada lagu di sini.
-            </div>
-        `;
-
+        box.innerHTML = `<div class="empty">Belum ada lagu di sini.</div>`;
         return;
-
     }
-
-
     list.forEach(song => {
-
-        const index =
-            allSongs().indexOf(song);
-
-
-        const element =
-            document.createElement("article");
-
-        element.className =
-            "card";
-
-
+        const index = allSongs().indexOf(song);
+        const element = document.createElement("article");
+        element.className = "card";
         element.innerHTML = `
-
             <div class="art">
-
-                <img
-                    src="${song.cover}"
-                    alt="${escapeHTML(song.title)}">
-
-                <button
-                    class="play-float"
-                    onclick="playSong(${index})">
-                    ▶
-                </button>
-
+                <img src="${song.cover}" alt="${escapeHTML(song.title)}">
+                <button class="play-float" onclick="playSong(${index})">▶</button>
             </div>
-
-
-            <div class="card-title">
-                ${escapeHTML(song.title)}
-            </div>
-
-
-            <div class="card-sub">
-                ${escapeHTML(song.artist)}
-                •
-                ${escapeHTML(song.album || "")}
-            </div>
-
+            <div class="card-title">${escapeHTML(song.title)}</div>
+            <div class="card-sub">${escapeHTML(song.artist)} • ${escapeHTML(song.album || "")}</div>
         `;
-
-
         box.appendChild(element);
-
     });
-
 }
-
-
-/* =====================================================
-   PLAY SONG
-===================================================== */
 
 function playSong(index){
-
-    const list =
-        allSongs();
-
-
-    if(!list[index]){
-        return;
-    }
-
-
+    const list = allSongs();
+    if(!list[index]) return;
     current = index;
+    const song = list[index];
 
+    document.getElementById("nowTitle").textContent = song.title;
+    document.getElementById("nowArtist").textContent = song.artist + " • " + (song.album || "");
+    document.getElementById("nowCover").src = song.cover;
+    document.getElementById("progress").value = 0;
+    document.getElementById("cur").textContent = "0:00";
+    document.getElementById("dur").textContent = "0:00";
 
-    const song =
-        list[index];
-
-
-    document.getElementById(
-        "nowTitle"
-    ).textContent =
-        song.title;
-
-
-    document.getElementById(
-        "nowArtist"
-    ).textContent =
-        song.artist +
-        " • " +
-        (song.album || "");
-
-
-    document.getElementById(
-        "nowCover"
-    ).src =
-        song.cover;
-
-
-    document.getElementById(
-        "progress"
-    ).value = 0;
-
-
-    document.getElementById(
-        "cur"
-    ).textContent =
-        "0:00";
-
-
-    document.getElementById(
-        "dur"
-    ).textContent =
-        "0:00";
-
-
-    audio.src =
-        song.audio || "";
-
+    audio.src = song.audio || "";
 
     if(!song.audio){
-
-        document.getElementById(
-            "playBtn"
-        ).textContent =
-            "▶";
-
-
-        toast(
-            "Tambahkan URL audio milikmu untuk memutar lagu ini."
-        );
-
+        document.getElementById("playBtn").textContent = "▶";
+        toast("Audio tidak tersedia.");
         return;
-
     }
 
-
-    audio.play()
-
-        .then(() => {
-
-            document.getElementById(
-                "playBtn"
-            ).textContent =
-                "⏸";
-
-        })
-
-        .catch(() => {
-
-            toast(
-                "Audio tidak dapat diputar."
-            );
-
-        });
-
+    audio.play().then(() => {
+        document.getElementById("playBtn").textContent = "⏸";
+    }).catch(() => {
+        toast("Audio tidak dapat diputar.");
+    });
 }
-
-
-/* =====================================================
-   PLAY / PAUSE
-===================================================== */
 
 function togglePlay(){
-
     if(current < 0){
-
         playSong(0);
-
         return;
-
     }
-
-
     if(!audio.src){
-
-        toast(
-            "Belum ada sumber audio."
-        );
-
+        toast("Belum ada sumber audio.");
         return;
-
     }
-
-
     if(audio.paused){
-
         audio.play();
-
-        document.getElementById(
-            "playBtn"
-        ).textContent =
-            "⏸";
-
-    }
-
-    else{
-
+        document.getElementById("playBtn").textContent = "⏸";
+    } else {
         audio.pause();
-
-        document.getElementById(
-            "playBtn"
-        ).textContent =
-            "▶";
-
+        document.getElementById("playBtn").textContent = "▶";
     }
-
 }
-
-
-/* =====================================================
-   NEXT
-===================================================== */
 
 function nextSong(){
-
-    const list =
-        allSongs();
-
-
-    if(!list.length){
-        return;
-    }
-
-
+    const list = allSongs();
+    if(!list.length) return;
     let next;
-
-
     if(shuffle){
-
-        next =
-            Math.floor(
-                Math.random() *
-                list.length
-            );
-
+        next = Math.floor(Math.random() * list.length);
+    } else {
+        next = (current + 1 + list.length) % list.length;
     }
-
-    else{
-
-        next =
-            (current + 1 + list.length)
-            % list.length;
-
-    }
-
-
     playSong(next);
-
 }
-
-
-/* =====================================================
-   PREVIOUS
-===================================================== */
 
 function prevSong(){
-
     if(audio.currentTime > 5){
-
         audio.currentTime = 0;
-
-        return;
-
-    }
-
-
-    const list =
-        allSongs();
-
-
-    if(!list.length){
         return;
     }
-
-
-    const previous =
-        (current - 1 + list.length)
-        % list.length;
-
-
+    const list = allSongs();
+    if(!list.length) return;
+    const previous = (current - 1 + list.length) % list.length;
     playSong(previous);
-
 }
-
-
-/* =====================================================
-   SHUFFLE
-===================================================== */
 
 function toggleShuffle(){
-
-    shuffle =
-        !shuffle;
-
-
-    toast(
-        shuffle
-        ? "Shuffle aktif 🔀"
-        : "Shuffle mati"
-    );
-
+    shuffle = !shuffle;
+    toast(shuffle ? "Shuffle aktif 🔀" : "Shuffle mati");
 }
-
-
-/* =====================================================
-   REPEAT
-===================================================== */
 
 function toggleRepeat(){
-
-    repeat =
-        !repeat;
-
-
-    toast(
-        repeat
-        ? "Repeat aktif 🔁"
-        : "Repeat mati"
-    );
-
+    repeat = !repeat;
+    toast(repeat ? "Repeat aktif 🔁" : "Repeat mati");
 }
 
-
-/* =====================================================
-   AUDIO TIME
-===================================================== */
-
-audio.addEventListener(
-    "timeupdate",
-    () => {
-
-        if(audio.duration){
-
-            document.getElementById(
-                "progress"
-            ).value =
-                (
-                    audio.currentTime /
-                    audio.duration
-                ) * 100;
-
-        }
-
-
-        document.getElementById(
-            "cur"
-        ).textContent =
-            formatTime(
-                audio.currentTime
-            );
-
+audio.addEventListener("timeupdate", () => {
+    if(audio.duration){
+        document.getElementById("progress").value = (audio.currentTime / audio.duration) * 100;
     }
-);
+    document.getElementById("cur").textContent = formatTime(audio.currentTime);
+});
 
+audio.addEventListener("loadedmetadata", () => {
+    document.getElementById("dur").textContent = formatTime(audio.duration);
+});
 
-/* =====================================================
-   AUDIO METADATA
-===================================================== */
-
-audio.addEventListener(
-    "loadedmetadata",
-    () => {
-
-        document.getElementById(
-            "dur"
-        ).textContent =
-            formatTime(
-                audio.duration
-            );
-
+audio.addEventListener("ended", () => {
+    if(repeat){
+        audio.currentTime = 0;
+        audio.play();
+    } else {
+        nextSong();
     }
-);
+});
 
-
-/* =====================================================
-   AUDIO END
-===================================================== */
-
-audio.addEventListener(
-    "ended",
-    () => {
-
-        if(repeat){
-
-            audio.currentTime = 0;
-
-            audio.play();
-
-        }
-
-        else{
-
-            nextSong();
-
-        }
-
+document.getElementById("progress").addEventListener("input", event => {
+    if(audio.duration){
+        audio.currentTime = (event.target.value / 100) * audio.duration;
     }
-);
+});
 
-
-/* =====================================================
-   PROGRESS
-===================================================== */
-
-document.getElementById(
-    "progress"
-).addEventListener(
-    "input",
-    event => {
-
-        if(audio.duration){
-
-            audio.currentTime =
-                (
-                    event.target.value /
-                    100
-                ) *
-                audio.duration;
-
-        }
-
-    }
-);
-
-
-/* =====================================================
-   VOLUME
-===================================================== */
-
-const volume =
-document.getElementById(
-    "volume"
-);
-
-
-volume.addEventListener(
-    "input",
-    event => {
-
-        audio.volume =
-            event.target.value;
-
-    }
-);
-
-
+const volume = document.getElementById("volume");
+volume.addEventListener("input", event => {
+    audio.volume = event.target.value;
+});
 audio.volume = 0.8;
 
-
-/* =====================================================
-   FAVORITE CURRENT
-===================================================== */
-
 function toggleFavoriteCurrent(){
-
-    const list =
-        allSongs();
-
-
-    if(
-        current < 0 ||
-        !list[current]
-    ){
-
-        return;
-
-    }
-
-
-    const id =
-        list[current].id;
-
-
+    const list = allSongs();
+    if(current < 0 || !list[current]) return;
+    const id = list[current].id;
     if(isFavorite(id)){
-
-        favorites =
-            favorites.filter(
-                item => item !== id
-            );
-
-        toast(
-            "Dihapus dari favorit"
-        );
-
-    }
-
-    else{
-
+        favorites = favorites.filter(item => item !== id);
+        toast("Dihapus dari favorit");
+    } else {
         favorites.push(id);
-
-        toast(
-            "Ditambahkan ke favorit ♥"
-        );
-
+        toast("Ditambahkan ke favorit ♥");
     }
-
-
     saveFavorites();
-
     renderLibrary();
-
 }
-
-
-/* =====================================================
-   FAVORITE SONG
-===================================================== */
-
-function favoriteSong(id){
-
-    if(isFavorite(id)){
-
-        favorites =
-            favorites.filter(
-                item => item !== id
-            );
-
-        toast(
-            "Dihapus dari favorit"
-        );
-
-    }
-
-    else{
-
-        favorites.push(id);
-
-        toast(
-            "Ditambahkan ke favorit ♥"
-        );
-
-    }
-
-
-    saveFavorites();
-
-    renderLibrary();
-
-}
-
-
-/* =====================================================
-   LIBRARY
-===================================================== */
 
 function renderLibrary(){
-
-    const list =
-        allSongs().filter(
-            song =>
-                isFavorite(song.id)
-        );
-
-
-    renderGrid(
-        list,
-        "libraryGrid"
-    );
-
+    const list = allSongs().filter(song => isFavorite(song.id));
+    renderGrid(list, "libraryGrid");
 }
-
 
 function showFavorites(){
-
-    document.getElementById(
-        "homeSection"
-    ).style.display =
-        "none";
-
-
-    document.getElementById(
-        "librarySection"
-    ).style.display =
-        "block";
-
-
-    document.getElementById(
-        "homeNav"
-    ).classList.remove(
-        "active"
-    );
-
-
+    document.getElementById("homeSection").style.display = "none";
+    document.getElementById("librarySection").style.display = "block";
+    document.getElementById("homeNav").classList.remove("active");
     renderLibrary();
-
-
-    window.scrollTo({
-        top:0,
-        behavior:"smooth"
-    });
-
+    window.scrollTo({ top:0, behavior:"smooth" });
 }
-
-
-/* =====================================================
-   HOME
-===================================================== */
 
 function showHome(){
-
-    document.getElementById(
-        "homeSection"
-    ).style.display =
-        "block";
-
-
-    document.getElementById(
-        "librarySection"
-    ).style.display =
-        "none";
-
-
-    document.getElementById(
-        "homeNav"
-    ).classList.add(
-        "active"
-    );
-
-
+    document.getElementById("homeSection").style.display = "block";
+    document.getElementById("librarySection").style.display = "none";
+    document.getElementById("homeNav").classList.add("active");
     renderGrid();
-
-
-    window.scrollTo({
-        top:0,
-        behavior:"smooth"
-    });
-
+    window.scrollTo({ top:0, behavior:"smooth" });
 }
-
-
-/* =====================================================
-   CATEGORY
-===================================================== */
 
 function showCategory(){
-
     showHome();
-
-    toast(
-        "Menampilkan semua lagu"
-    );
-
+    toast("Menampilkan semua lagu");
 }
 
-
-/* =====================================================
-   SHUFFLE ALL
-===================================================== */
-
 function shuffleAll(){
+    const list = allSongs();
+    if(!list.length) return;
+    shuffle = true;
+    const random = Math.floor(Math.random() * list.length);
+    playSong(random);
+}
 
-    const list =
-        allSongs();
+const searchInput = document.getElementById("searchInput");
+searchInput.addEventListener("input", event => {
+    const query = event.target.value.toLowerCase().trim();
+    const section = document.getElementById("resultsSection");
+    const box = document.getElementById("results");
 
-
-    if(!list.length){
+    if(!query){
+        section.classList.remove("show");
         return;
     }
 
+    const found = allSongs().filter(song => {
+        const text = (song.title + " " + song.artist + " " + song.album).toLowerCase();
+        return text.includes(query);
+    });
 
-    shuffle = true;
+    section.classList.add("show");
+    document.getElementById("resultCount").textContent = found.length + " hasil";
+    box.innerHTML = "";
 
-
-    const random =
-        Math.floor(
-            Math.random() *
-            list.length
-        );
-
-
-    playSong(random);
-
-}
-
-
-/* =====================================================
-   SEARCH
-===================================================== */
-
-const searchInput =
-document.getElementById(
-    "searchInput"
-);
-
-
-searchInput.addEventListener(
-    "input",
-    event => {
-
-        const query =
-            event.target.value
-            .toLowerCase()
-            .trim();
-
-
-        const section =
-            document.getElementById(
-                "resultsSection"
-            );
-
-
-        const box =
-            document.getElementById(
-                "results"
-            );
-
-
-        if(!query){
-
-            section.classList.remove(
-                "show"
-            );
-
-            return;
-
-        }
-
-
-        const found =
-            allSongs().filter(
-                song => {
-
-                    const text =
-                        (
-                            song.title +
-                            " " +
-                            song.artist +
-                            " " +
-                            song.album
-                        )
-                        .toLowerCase();
-
-
-                    return text.includes(
-                        query
-                    );
-
-                }
-            );
-
-
-        section.classList.add(
-            "show"
-        );
-
-
-        document.getElementById(
-            "resultCount"
-        ).textContent =
-            found.length +
-            " hasil";
-
-
-        box.innerHTML = "";
-
-
-        if(!found.length){
-
-            box.innerHTML = `
-                <div class="empty">
-                    Lagu tidak ditemukan.
-                </div>
-            `;
-
-            return;
-
-        }
-
-
-        found.forEach(song => {
-
-            const index =
-                allSongs().indexOf(song);
-
-
-            const element =
-                document.createElement(
-                    "div"
-                );
-
-
-            element.className =
-                "result";
-
-
-            element.innerHTML = `
-
-                <img
-                    src="${song.cover}"
-                    alt="">
-
-                <div class="result-main">
-
-                    <div class="result-title">
-                        ${escapeHTML(song.title)}
-                    </div>
-
-                    <div class="result-sub">
-                        ${escapeHTML(song.artist)}
-                        •
-                        ${escapeHTML(song.album || "")}
-                    </div>
-
-                </div>
-
-
-                <button
-                    onclick="playSong(${index})">
-                    ▶
-                </button>
-
-            `;
-
-
-            box.appendChild(
-                element
-            );
-
-        });
-
+    if(!found.length){
+        box.innerHTML = `<div class="empty">Lagu tidak ditemukan.</div>`;
+        return;
     }
-);
 
-
-/* =====================================================
-   SEARCH FOCUS
-===================================================== */
+    found.forEach(song => {
+        const index = allSongs().indexOf(song);
+        const element = document.createElement("div");
+        element.className = "result";
+        element.innerHTML = `
+            <img src="${song.cover}" alt="">
+            <div class="result-main">
+                <div class="result-title">${escapeHTML(song.title)}</div>
+                <div class="result-sub">${escapeHTML(song.artist)} • ${escapeHTML(song.album || "")}</div>
+            </div>
+            <button onclick="playSong(${index})">▶</button>
+        `;
+        box.appendChild(element);
+    });
+});
 
 function focusSearch(){
-
     showHome();
-
-
-    setTimeout(
-        () => {
-
-            searchInput.focus();
-
-        },
-        100
-    );
-
+    setTimeout(() => { searchInput.focus(); }, 100);
 }
-
-
-/* =====================================================
-   LOCAL MUSIC
-===================================================== */
 
 function openUpload(){
-
-    document.getElementById(
-        "uploadModal"
-    ).classList.add(
-        "open"
-    );
-
+    document.getElementById("uploadModal").classList.add("open");
 }
-
 
 function closeUpload(){
-
-    document.getElementById(
-        "uploadModal"
-    ).classList.remove(
-        "open"
-    );
-
+    document.getElementById("uploadModal").classList.remove("open");
 }
 
-
-document.getElementById(
-    "fileInput"
-).addEventListener(
-    "change",
-    event => {
-
-        const files =
-            [...event.target.files];
-
-
-        files.forEach(
-            file => {
-
-                localSongs.push({
-
-                    id:
-                        "local-" +
-                        Date.now() +
-                        "-" +
-                        Math.random(),
-
-                    title:
-                        file.name
-                        .replace(
-                            /\.[^.]+$/,
-                            ""
-                        ),
-
-                    artist:
-                        "Musik Lokal",
-
-                    album:
-                        "Perangkatmu",
-
-                    cover:
-                        "https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?auto=format&fit=crop&w=700&q=80",
-
-                    audio:
-                        URL.createObjectURL(
-                            file
-                        )
-
-                });
-
-            }
-        );
-
-
-        renderGrid();
-
-        closeUpload();
-
-
-        toast(
-            files.length +
-            " lagu ditambahkan"
-        );
-
-
-        event.target.value = "";
-
-    }
-);
-
-
-/* =====================================================
-   SHARE
-===================================================== */
+document.getElementById("fileInput").addEventListener("change", event => {
+    const files = [...event.target.files];
+    files.forEach(file => {
+        localSongs.push({
+            id: "local-" + Date.now() + "-" + Math.random(),
+            title: file.name.replace(/\.[^.]+$/, ""),
+            artist: "Musik Lokal",
+            album: "Perangkatmu",
+            cover: "https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?auto=format&fit=crop&w=700&q=80",
+            audio: URL.createObjectURL(file)
+        });
+    });
+    renderGrid();
+    closeUpload();
+    toast(files.length + " lagu ditambahkan");
+    event.target.value = "";
+});
 
 function sharePage(){
-
-    const data = {
-
-        title:
-            "RAY MUSIC",
-
-        text:
-            "Dengarkan musik di RAY MUSIC",
-
-        url:
-            location.href
-
-    };
-
-
+    const data = { title: "RAY MUSIC", text: "Dengarkan musik di RAY MUSIC", url: location.href };
     if(navigator.share){
-
-        navigator.share(
-            data
-        );
-
+        navigator.share(data);
+    } else if(navigator.clipboard){
+        navigator.clipboard.writeText(location.href).then(() => toast("Link berhasil disalin"));
     }
-
-    else if(navigator.clipboard){
-
-        navigator.clipboard
-            .writeText(
-                location.href
-            )
-            .then(
-                () =>
-                    toast(
-                        "Link berhasil disalin"
-                    )
-            );
-
-    }
-
 }
 
-
-/* =====================================================
-   INITIALIZE
-===================================================== */
-
 renderGrid();
-
 renderLibrary();
-
 </script>
 
 </body>
-    </html>
+            </html>
