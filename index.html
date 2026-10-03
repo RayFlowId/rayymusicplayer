@@ -755,17 +755,17 @@ img{
     <div class="hero">
         <div class="eyebrow">RAY MUSIC V3</div>
         <h1>Music for<br>your mood.</h1>
-        <p>Dengarkan koleksi musikmu dalam satu tampilan yang simpel dan modern.</p>
+        <p>Ketik judul lagu atau artis apa saja di bawah untuk memutarnya secara otomatis.</p>
         <div class="search">
             <span>⌕</span>
-            <input id="searchInput" type="text" placeholder="Cari lagu, artis, atau album..." autocomplete="off">
+            <input id="searchInput" type="text" placeholder="Cari lagu apa saja (misal: Lofi, Adele, BTS)..." autocomplete="off">
         </div>
     </div>
 
     <!-- SEARCH RESULT -->
     <section id="resultsSection" class="section results">
         <div class="section-head">
-            <h2>Hasil pencarian</h2>
+            <h2>Hasil pencarian online</h2>
             <span id="resultCount" class="muted"></span>
         </div>
         <div id="results"></div>
@@ -778,10 +778,10 @@ img{
             <span class="muted">RAY MUSIC</span>
         </div>
         <div class="quick">
-            <button onclick="showCategory()">
+            <button onclick="searchDefaultTracks('top hits')">
                 🎧
-                <b>Semua Lagu</b>
-                <small>Koleksi utama</small>
+                <b>Top Hits</b>
+                <small>Lagu populer</small>
             </button>
             <button onclick="showFavorites()">
                 ♥
@@ -804,7 +804,7 @@ img{
     <!-- SONGS -->
     <section class="section">
         <div class="section-head">
-            <h2>Untuk kamu</h2>
+            <h2>Rekomendasi untuk kamu</h2>
             <span class="muted">Featured</span>
         </div>
         <div id="songGrid" class="grid"></div>
@@ -896,51 +896,16 @@ img{
 <audio id="audio" preload="metadata"></audio>
 
 <script>
-/* Database lagu dengan contoh URL audio publik */
-const songs = [
-    {
-        id:"ray001",
-        title:"Lofi Study",
-        artist:"Fayde & Friends",
-        album:"Chill Beats",
-        cover:"https://images.unsplash.com/photo-1511379938547-c1f69419868d?auto=format&fit=crop&w=700&q=80",
-        audio:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"
-    },
-    {
-        id:"ray002",
-        title:"Electronic Vibes",
-        artist:"SoundHelix",
-        album:"Synth Collection",
-        cover:"https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&w=700&q=80",
-        audio:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3"
-    },
-    {
-        id:"ray003",
-        title:"Midnight Groove",
-        artist:"Audio Lab",
-        album:"Night Session",
-        cover:"https://images.unsplash.com/photo-1516280440614-37939bbacd81?auto=format&fit=crop&w=700&q=80",
-        audio:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3"
-    },
-    {
-        id:"ray004",
-        title:"Ocean Breeze",
-        artist:"Ambient Dream",
-        album:"Nature Sounds",
-        cover:"https://images.unsplash.com/photo-1524368535928-5b5e00ddc76b?auto=format&fit=crop&w=700&q=80",
-        audio:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3"
-    }
-];
-
-const audio = document.getElementById("audio");
+let dynamicSongs = [];
+let localSongs = [];
 let current = -1;
 let shuffle = false;
 let repeat = false;
-let localSongs = [];
+
 let favorites = JSON.parse(localStorage.getItem("ray_music_favorites") || "[]");
 
 function allSongs(){
-    return [...songs, ...localSongs];
+    return [...dynamicSongs, ...localSongs];
 }
 
 function formatTime(seconds){
@@ -975,11 +940,36 @@ function saveFavorites(){
     localStorage.setItem("ray_music_favorites", JSON.stringify(favorites));
 }
 
+// Mengambil lagu otomatis dari iTunes API
+async function fetchMusic(query){
+    try {
+        const response = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(query)}&entity=song&limit=15`);
+        const data = await response.json();
+        
+        dynamicSongs = data.results.map(item => ({
+            id: String(item.trackId),
+            title: item.trackName,
+            artist: item.artistName,
+            album: item.collectionName || "Single",
+            cover: item.artworkUrl100 ? item.artworkUrl100.replace("100x100bb", "600x600bb") : "https://images.unsplash.com/photo-1511379938547-c1f69419868d?auto=format&fit=crop&w=700&q=80",
+            audio: item.previewUrl // Link audio 30 detik resmi dari iTunes
+        }));
+
+        renderGrid();
+    } catch (error) {
+        toast("Gagal memuat musik online.");
+    }
+}
+
+function searchDefaultTracks(keyword){
+    fetchMusic(keyword);
+}
+
 function renderGrid(list = allSongs(), target = "songGrid"){
     const box = document.getElementById(target);
     box.innerHTML = "";
     if(list.length === 0){
-        box.innerHTML = `<div class="empty">Belum ada lagu di sini.</div>`;
+        box.innerHTML = `<div class="empty">Belum ada lagu ditemukan. Coba cari artis atau judul lain.</div>`;
         return;
     }
     list.forEach(song => {
@@ -997,6 +987,8 @@ function renderGrid(list = allSongs(), target = "songGrid"){
         box.appendChild(element);
     });
 }
+
+const audio = document.getElementById("audio");
 
 function playSong(index){
     const list = allSongs();
@@ -1145,11 +1137,6 @@ function showHome(){
     window.scrollTo({ top:0, behavior:"smooth" });
 }
 
-function showCategory(){
-    showHome();
-    toast("Menampilkan semua lagu");
-}
-
 function shuffleAll(){
     const list = allSongs();
     if(!list.length) return;
@@ -1158,45 +1145,73 @@ function shuffleAll(){
     playSong(random);
 }
 
+// Pencarian Otomatis Saat Mengetik
 const searchInput = document.getElementById("searchInput");
+let searchTimeout;
+
 searchInput.addEventListener("input", event => {
-    const query = event.target.value.toLowerCase().trim();
+    const query = event.target.value.trim();
     const section = document.getElementById("resultsSection");
-    const box = document.getElementById("results");
+    
+    clearTimeout(searchTimeout);
 
     if(!query){
         section.classList.remove("show");
         return;
     }
 
-    const found = allSongs().filter(song => {
-        const text = (song.title + " " + song.artist + " " + song.album).toLowerCase();
-        return text.includes(query);
-    });
-
     section.classList.add("show");
-    document.getElementById("resultCount").textContent = found.length + " hasil";
-    box.innerHTML = "";
+    document.getElementById("resultCount").textContent = "Mencari...";
 
-    if(!found.length){
-        box.innerHTML = `<div class="empty">Lagu tidak ditemukan.</div>`;
-        return;
-    }
+    // Delay pencarian sedikit agar tidak spam request ke server
+    searchTimeout = setTimeout(async () => {
+        try {
+            const response = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(query)}&entity=song&limit=10`);
+            const data = await response.json();
+            
+            const box = document.getElementById("results");
+            box.innerHTML = "";
 
-    found.forEach(song => {
-        const index = allSongs().indexOf(song);
-        const element = document.createElement("div");
-        element.className = "result";
-        element.innerHTML = `
-            <img src="${song.cover}" alt="">
-            <div class="result-main">
-                <div class="result-title">${escapeHTML(song.title)}</div>
-                <div class="result-sub">${escapeHTML(song.artist)} • ${escapeHTML(song.album || "")}</div>
-            </div>
-            <button onclick="playSong(${index})">▶</button>
-        `;
-        box.appendChild(element);
-    });
+            document.getElementById("resultCount").textContent = data.results.length + " hasil";
+
+            if(!data.results.length){
+                box.innerHTML = `<div class="empty">Lagu tidak ditemukan.</div>`;
+                return;
+            }
+
+            data.results.forEach(item => {
+                const songObj = {
+                    id: String(item.trackId),
+                    title: item.trackName,
+                    artist: item.artistName,
+                    album: item.collectionName || "Single",
+                    cover: item.artworkUrl100 ? item.artworkUrl100.replace("100x100bb", "600x600bb") : "https://images.unsplash.com/photo-1511379938547-c1f69419868d?auto=format&fit=crop&w=700&q=80",
+                    audio: item.previewUrl
+                };
+
+                // Masukkan ke array global jika belum ada
+                if(!allSongs().some(s => s.id === songObj.id)){
+                    dynamicSongs.push(songObj);
+                }
+
+                const index = allSongs().indexOf(allSongs().find(s => s.id === songObj.id));
+
+                const element = document.createElement("div");
+                element.className = "result";
+                element.innerHTML = `
+                    <img src="${songObj.cover}" alt="">
+                    <div class="result-main">
+                        <div class="result-title">${escapeHTML(songObj.title)}</div>
+                        <div class="result-sub">${escapeHTML(songObj.artist)} • ${escapeHTML(songObj.album)}</div>
+                    </div>
+                    <button onclick="playSong(${index})">▶</button>
+                `;
+                box.appendChild(element);
+            });
+        } catch (e) {
+            toast("Gagal mencari lagu.");
+        }
+    }, 500);
 });
 
 function focusSearch(){
@@ -1239,9 +1254,9 @@ function sharePage(){
     }
 }
 
-renderGrid();
-renderLibrary();
+// Muat lagu populer secara otomatis saat pertama kali dibuka
+fetchMusic("pop hits");
 </script>
 
 </body>
-            </html>
+</html>
