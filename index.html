@@ -693,8 +693,9 @@ main{
    Website GitHub Pages menggunakan PKCE.
 */
 
-const CLIENT_ID =
- "MASUKKAN_CLIENT_ID_KAMU_DISINI";
+// Isi dengan Client ID dari Spotify Developer Dashboard.
+// Contoh: "1234567890abcdef1234567890abcdef"
+const CLIENT_ID = "297fd142b7a44fcfb3711a0251bb5fd6";
 
 
 /*
@@ -704,9 +705,9 @@ const CLIENT_ID =
    redirect URI otomatis mengikuti halaman ini.
 */
 
-const REDIRECT_URI =
- window.location.origin +
- window.location.pathname;
+// Harus SAMA PERSIS dengan Redirect URI yang didaftarkan
+// di Spotify Developer Dashboard.
+const REDIRECT_URI = "https://music.rayyy.my.id/";
 
 
 const SCOPES =
@@ -827,12 +828,12 @@ async function spotifyLogin(){
 
  if(
   !CLIENT_ID ||
-  CLIENT_ID ===
-  "297fd142b7a44fcfb3711a0251bb5fd6"
+  CLIENT_ID === "297fd142b7a44fcfb3711a0251bb5fd6" ||
+  !/^[A-Za-z0-9]{32}$/.test(CLIENT_ID)
  ){
 
   toast(
-   "Masukkan Client ID dulu di kode."
+   "Client ID Spotify belum valid. Isi 32 karakter Client ID dari Spotify Developer Dashboard."
   );
 
   return;
@@ -914,8 +915,13 @@ async function callback(){
 
  if(error){
 
+  const description =
+   params.get("error_description") || error;
+
+  console.error("Spotify OAuth error:", error, description);
+
   toast(
-   "Login Spotify dibatalkan."
+   "Spotify: " + description
   );
 
   cleanURL();
