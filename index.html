@@ -5,7 +5,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#07070a">
 <meta name="description" content="RAY MUSIC V3 — modern web music player">
-<title>RAY MUSIC V3</title>
+<title>RAY MUSIC V5 — YouTube Player</title>
+<script src="https://www.youtube.com/iframe_api"></script>
 
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -346,6 +347,34 @@ a{color:inherit;text-decoration:none}
   .card-title{font-size:13px}
   .now-artist{margin-top:3px}
 }
+.youtube-panel{
+  margin-top:22px;
+  border:1px solid var(--line);
+  border-radius:22px;
+  overflow:hidden;
+  background:#000;
+  box-shadow:var(--shadow);
+  display:none;
+}
+.youtube-panel.show{display:block}
+.youtube-head{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:12px 15px;background:#111218;border-bottom:1px solid var(--line);
+}
+.youtube-head b{font-size:13px}
+.youtube-head span{font-size:11px;color:#858894}
+#youtubePlayer{
+  width:100%;
+  aspect-ratio:16/9;
+  background:#000;
+}
+.api-note{
+  margin-top:9px;font-size:11px;color:#737783;line-height:1.55
+}
+.statusbar.clickable{cursor:pointer}
+@media(max-width:760px){
+  .youtube-panel{border-radius:18px}
+}
 </style>
 </head>
 
@@ -364,6 +393,7 @@ a{color:inherit;text-decoration:none}
   </div>
 
   <div class="header-actions">
+    <button class="icon-btn" id="settingsBtn" title="Pengaturan">⚙</button>
     <button class="icon-btn" id="themeBtn" title="Tema">◐</button>
     <button class="icon-btn" id="queueBtn" title="Queue">☷</button>
   </div>
@@ -373,20 +403,28 @@ a{color:inherit;text-decoration:none}
 
   <section class="hero">
     <div class="hero-copy">
-      <div class="eyebrow">RAY MUSIC V3</div>
+      <div class="eyebrow">RAY MUSIC V5</div>
       <h1>Musik kamu.<br><span>Gaya kamu.</span></h1>
       <p>
         Player musik web baru dengan tampilan clean, dark, responsif,
-        dan tidak lagi bergantung pada Spotify SDK atau login Spotify.
+        memakai pencarian YouTube dan YouTube IFrame Player resmi.
       </p>
       <div class="hero-actions">
         <button class="btn btn-primary" id="focusSearch">⌕ Cari Musik</button>
-        <button class="btn btn-secondary" id="demoBtn">▶ Coba Demo Player</button>
+        <button class="btn btn-secondary" id="demoBtn">⚙ Atur API Key</button>
       </div>
     </div>
   </section>
 
-  <div class="statusbar">
+  <div class="youtube-panel" id="youtubePanel">
+    <div class="youtube-head">
+      <b id="youtubeTitle">YouTube Player</b>
+      <span>Player resmi YouTube</span>
+    </div>
+    <div id="youtubePlayer"></div>
+  </div>
+
+  <div class="statusbar clickable" id="statusbar">
     <div class="status-left">
       <span class="status-dot ready" id="statusDot"></span>
       <b id="statusText">RAY Player siap</b>
@@ -466,16 +504,23 @@ a{color:inherit;text-decoration:none}
 <div class="modal" id="settingsModal">
   <div class="modal-card">
     <div class="modal-head">
-      <h3>Music Source</h3>
+      <h3>RAY MUSIC Settings</h3>
       <button class="close" id="closeModal">×</button>
     </div>
     <p>
-      File ini sengaja tidak memakai Spotify. Isi endpoint backend kamu
-      nanti di sini jika sudah menentukan sumber musik/API.
+      RAY MUSIC memakai YouTube Data API v3 untuk mencari lagu/video.
+      API key disimpan hanya di browser ini (localStorage), bukan ditanam
+      ke file HTML. Untuk keamanan, batasi key di Google Cloud ke domain
+      <b>music.rayyy.my.id</b> dan API <b>YouTube Data API v3</b>.
     </p>
     <div class="field">
-      <label for="apiBase">API Base URL</label>
-      <input id="apiBase" placeholder="https://domain-kamu/api">
+      <label for="youtubeApiKey">YouTube Data API v3 Key</label>
+      <input id="youtubeApiKey" type="password" autocomplete="off"
+             placeholder="Masukkan API key Google Cloud">
+    </div>
+    <div class="api-note">
+      Kalau pencarian gagal dengan 403, cek kembali API sudah di-enable,
+      key tidak salah, dan HTTP referrer website sudah diizinkan.
     </div>
     <div class="modal-actions">
       <button class="btn btn-secondary" id="cancelSettings">Batal</button>
@@ -486,101 +531,27 @@ a{color:inherit;text-decoration:none}
 
 <script>
 /*
-  =========================================================
-  RAY MUSIC V3 — NEW PLAYER CORE
-  =========================================================
-
-  Spotify has intentionally been removed:
-  - no Spotify SDK
-  - no Client ID
-  - no Client Secret
-  - no OAuth / PKCE
-  - no Spotify Web API
-  - no Spotify Web Playback SDK
-
-  The player uses a normal HTMLAudioElement.
-  Connect your future music provider through:
-      searchMusic(query)
-      loadTrack(track)
-  =========================================================
+  RAY MUSIC V5
+  - Spotify completely removed.
+  - YouTube Data API v3: search only.
+  - YouTube IFrame Player API: playback/control.
+  - API key is stored in localStorage in this browser.
 */
 
-const audio = new Audio();
-audio.preload = "metadata";
-audio.volume = .8;
+const fallbackCover =
+  "https://images.unsplash.com/photo-1511379938547-c1f69419868d?auto=format&fit=crop&w=500&q=80";
 
 const state = {
   tracks: [],
   queue: [],
   currentIndex: -1,
   playing: false,
-  apiBase: localStorage.getItem("ray_music_api") || ""
+  youtubeApiKey: localStorage.getItem("ray_youtube_key") || "",
+  ytReady: false,
+  ytPlayer: null,
+  playerReady: false,
+  muted: false
 };
-
-const fallbackCover =
-  "https://images.unsplash.com/photo-1511379938547-c1f69419868d?auto=format&fit=crop&w=500&q=80";
-
-/*
-  Demo data keeps the new UI visible while the real source is not
-  configured. Replace these URLs with your own licensed audio URLs,
-  or make searchMusic() call your backend/API.
-*/
-const demoTracks = [
-  {
-    id:"demo-1",
-    title:"Midnight Drive",
-    artist:"RAY MUSIC",
-    album:"Night Sessions",
-    duration:0,
-    cover:"https://images.unsplash.com/photo-1511379938547-c1f69419868d?auto=format&fit=crop&w=600&q=85",
-    url:""
-  },
-  {
-    id:"demo-2",
-    title:"Neon Lights",
-    artist:"RAY MUSIC",
-    album:"City After Dark",
-    duration:0,
-    cover:"https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&w=600&q=85",
-    url:""
-  },
-  {
-    id:"demo-3",
-    title:"Late Night",
-    artist:"RAY MUSIC",
-    album:"After Hours",
-    duration:0,
-    cover:"https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=600&q=85",
-    url:""
-  },
-  {
-    id:"demo-4",
-    title:"Lost In The City",
-    artist:"RAY MUSIC",
-    album:"Urban Echoes",
-    duration:0,
-    cover:"https://images.unsplash.com/photo-1521337581100-8ca9a73a5f79?auto=format&fit=crop&w=600&q=85",
-    url:""
-  },
-  {
-    id:"demo-5",
-    title:"Cloud Nine",
-    artist:"RAY MUSIC",
-    album:"Dream State",
-    duration:0,
-    cover:"https://images.unsplash.com/photo-1506157786151-b8491531f063?auto=format&fit=crop&w=600&q=85",
-    url:""
-  },
-  {
-    id:"demo-6",
-    title:"Purple Rain",
-    artist:"RAY MUSIC",
-    album:"Violet",
-    duration:0,
-    cover:"https://images.unsplash.com/photo-1516280440614-37939bbacd81?auto=format&fit=crop&w=600&q=85",
-    url:""
-  }
-];
 
 function $(id){ return document.getElementById(id); }
 
@@ -598,7 +569,7 @@ function toast(message){
   el.textContent = message;
   el.classList.add("show");
   clearTimeout(window.__rayToast);
-  window.__rayToast = setTimeout(()=>el.classList.remove("show"),2600);
+  window.__rayToast = setTimeout(()=>el.classList.remove("show"),2800);
 }
 
 function formatTime(seconds){
@@ -611,6 +582,10 @@ function formatTime(seconds){
 function setStatus(text, ready=true){
   $("statusText").textContent = text;
   $("statusDot").classList.toggle("ready",ready);
+}
+
+function getCurrentTrack(){
+  return state.queue[state.currentIndex] || null;
 }
 
 function renderCards(list){
@@ -639,7 +614,7 @@ function renderCards(list){
       <div class="card-info">
         <div class="card-title">${escapeHTML(track.title)}</div>
         <div class="card-artist">${escapeHTML(track.artist || "Unknown artist")}</div>
-        <div class="card-meta">${escapeHTML(track.album || "Single")}</div>
+        <div class="card-meta">${escapeHTML(track.album || "YouTube")}</div>
       </div>
     </article>
   `).join("");
@@ -664,7 +639,7 @@ function renderQueue(){
   }
 
   el.innerHTML = state.queue.map((track,index)=>`
-    <div class="queue-item ${index===state.currentIndex ? "active":""}">
+    <div class="queue-item ${index===state.currentIndex ? "active":""}" data-queue="${index}">
       <img class="queue-cover" src="${escapeHTML(track.cover || fallbackCover)}" alt="">
       <div style="min-width:0">
         <div class="queue-title">${escapeHTML(track.title)}</div>
@@ -673,10 +648,16 @@ function renderQueue(){
       <span class="queue-time">${track.duration ? formatTime(track.duration) : "—"}</span>
     </div>
   `).join("");
+
+  el.querySelectorAll("[data-queue]").forEach(item=>{
+    item.addEventListener("click",()=>{
+      playTrack(state.queue[Number(item.dataset.queue)]);
+    });
+  });
 }
 
 function updatePlayer(){
-  const track = state.queue[state.currentIndex];
+  const track = getCurrentTrack();
 
   if(!track){
     $("nowTitle").textContent = "Belum ada lagu";
@@ -686,22 +667,103 @@ function updatePlayer(){
     $("progress").value = 0;
     $("progress").disabled = true;
     $("playBtn").textContent = "▶";
+    $("youtubeTitle").textContent = "YouTube Player";
     return;
   }
 
   $("nowTitle").textContent = track.title || "Unknown";
   $("nowArtist").textContent = track.artist || "Unknown artist";
   $("nowCover").src = track.cover || fallbackCover;
+  $("youtubeTitle").textContent = track.title || "YouTube Player";
   $("playBtn").textContent = state.playing ? "Ⅱ" : "▶";
-  $("progress").disabled = !Number.isFinite(audio.duration);
+  $("progress").disabled = !state.playerReady;
   renderQueue();
 }
 
+function onYouTubeIframeAPIReady(){
+  state.ytReady = true;
+  createYouTubePlayer();
+}
+
+function createYouTubePlayer(){
+  if(!state.ytReady || state.ytPlayer || !window.YT) return;
+
+  state.ytPlayer = new YT.Player("youtubePlayer",{
+    width:"100%",
+    height:"100%",
+    videoId:"",
+    playerVars:{
+      controls:1,
+      playsinline:1,
+      rel:0
+    },
+    events:{
+      onReady(event){
+        state.playerReady = true;
+        event.target.setVolume(Number($("volume").value) * 100);
+        updatePlayer();
+        setStatus("RAY Player siap",true);
+      },
+      onStateChange(event){
+        if(event.data === YT.PlayerState.PLAYING){
+          state.playing = true;
+          const duration = event.target.getDuration();
+          const track = getCurrentTrack();
+          if(track && duration) track.duration = duration;
+          updatePlayer();
+          setStatus("Sedang memutar",true);
+          $("youtubePanel").classList.add("show");
+        }else if(event.data === YT.PlayerState.PAUSED){
+          state.playing = false;
+          updatePlayer();
+        }else if(event.data === YT.PlayerState.ENDED){
+          state.playing = false;
+          updatePlayer();
+          next();
+        }
+      },
+      onError(event){
+        state.playing = false;
+        updatePlayer();
+        const messages = {
+          2:"Video ID tidak valid.",
+          5:"Video tidak bisa diputar di player HTML5.",
+          100:"Video tidak ditemukan atau sudah dihapus.",
+          101:"Video ini tidak mengizinkan pemutaran di website.",
+          150:"Video ini tidak mengizinkan pemutaran di website."
+        };
+        toast(messages[event.data] || "YouTube tidak bisa memutar video ini.");
+        setStatus("Video tidak dapat diputar",false);
+      },
+      onAutoplayBlocked(){
+        toast("Autoplay diblokir browser. Tekan tombol Play lagi.");
+      }
+    }
+  });
+}
+
+function waitForPlayer(){
+  return new Promise((resolve,reject)=>{
+    const started = Date.now();
+    const timer = setInterval(()=>{
+      if(state.playerReady){
+        clearInterval(timer);
+        resolve();
+      }else if(Date.now()-started > 10000){
+        clearInterval(timer);
+        reject(new Error("YouTube Player belum siap."));
+      }
+    },100);
+  });
+}
+
 async function playTrack(track){
-  if(!track) return;
+  if(!track || !track.youtubeId){
+    toast("Lagu ini tidak memiliki YouTube video ID.");
+    return;
+  }
 
   let index = state.queue.findIndex(x=>x.id === track.id);
-
   if(index === -1){
     state.queue.push(track);
     index = state.queue.length - 1;
@@ -710,62 +772,62 @@ async function playTrack(track){
   state.currentIndex = index;
   updatePlayer();
 
-  if(!track.url){
-    state.playing = false;
-    updatePlayer();
-    toast("Player siap — sambungkan sumber audio/API terlebih dahulu.");
-    return;
-  }
-
   try{
-    audio.src = track.url;
-    await audio.play();
-    state.playing = true;
-    setStatus("Sedang memutar",true);
-    updatePlayer();
+    if(!state.ytReady){
+      toast("YouTube Player sedang dimuat...");
+      await waitForPlayer();
+    }else if(!state.playerReady){
+      await waitForPlayer();
+    }
+
+    $("youtubePanel").classList.add("show");
+    $("youtubePanel").scrollIntoView({behavior:"smooth",block:"nearest"});
+    state.ytPlayer.loadVideoById(track.youtubeId);
+    setStatus("Memuat video…",true);
   }catch(error){
     console.error(error);
-    state.playing = false;
-    updatePlayer();
-    toast("Audio tidak bisa diputar.");
+    toast("YouTube Player belum siap. Coba lagi.");
   }
 }
 
 function togglePlay(){
-  const track = state.queue[state.currentIndex];
+  const track = getCurrentTrack();
 
   if(!track){
-    playTrack(state.tracks[0] || demoTracks[0]);
+    if(state.tracks[0]) playTrack(state.tracks[0]);
+    else {
+      $("search").focus();
+      toast("Cari lagu dulu.");
+    }
     return;
   }
 
-  if(!track.url){
-    toast("Belum ada URL audio pada lagu ini.");
+  if(!state.playerReady){
+    playTrack(track);
     return;
   }
 
-  if(audio.paused) audio.play();
-  else audio.pause();
+  const playerState = state.ytPlayer.getPlayerState();
+  if(playerState === YT.PlayerState.PLAYING){
+    state.ytPlayer.pauseVideo();
+  }else{
+    state.ytPlayer.playVideo();
+  }
 }
 
 function next(){
   if(!state.queue.length) return;
 
   const nextIndex = state.currentIndex + 1;
-  if(nextIndex >= state.queue.length){
-    state.currentIndex = 0;
-  }else{
-    state.currentIndex = nextIndex;
-  }
-
+  state.currentIndex = nextIndex >= state.queue.length ? 0 : nextIndex;
   playTrack(state.queue[state.currentIndex]);
 }
 
 function previous(){
   if(!state.queue.length) return;
 
-  if(audio.currentTime > 4){
-    audio.currentTime = 0;
+  if(state.playerReady && state.ytPlayer.getCurrentTime() > 4){
+    state.ytPlayer.seekTo(0,true);
     return;
   }
 
@@ -775,72 +837,116 @@ function previous(){
 }
 
 /*
-  =========================================================
-  PROVIDER ADAPTER
-  =========================================================
-
-  Saat backend/API sudah dipilih, cukup ubah fungsi ini.
-
-  Expected response:
-  [
-    {
-      id, title, artist, album,
-      cover, url, duration
-    }
-  ]
-
-  Contoh:
-  const response = await fetch(
-    `${state.apiBase}/search?q=${encodeURIComponent(query)}`
-  );
-  return await response.json();
-
-  Jangan taruh API secret/private key di file frontend.
+  YouTube Data API v3 search.
+  Search results are restricted to videos that can be embedded.
 */
 async function searchMusic(query){
-  if(!state.apiBase){
-    return demoTracks.filter(track=>{
-      const haystack = `${track.title} ${track.artist} ${track.album}`.toLowerCase();
-      return haystack.includes(query.toLowerCase());
-    });
+  if(!state.youtubeApiKey){
+    throw new Error("YOUTUBE_API_KEY_MISSING");
   }
 
+  const params = new URLSearchParams({
+    part:"snippet",
+    q:query,
+    type:"video",
+    maxResults:"20",
+    regionCode:"ID",
+    relevanceLanguage:"id",
+    videoEmbeddable:"true",
+    order:"relevance",
+    key:state.youtubeApiKey
+  });
+
   const response = await fetch(
-    `${state.apiBase.replace(/\/$/,"")}/search?q=${encodeURIComponent(query)}`
+    `https://www.googleapis.com/youtube/v3/search?${params.toString()}`
   );
 
-  if(!response.ok) throw new Error("Search API gagal.");
-  const data = await response.json();
+  const data = await response.json().catch(()=>({}));
 
-  return Array.isArray(data) ? data : (data.results || []);
+  if(!response.ok){
+    const reason = data?.error?.errors?.[0]?.reason || "";
+    if(response.status === 403){
+      throw new Error(`API_FORBIDDEN:${reason}`);
+    }
+    throw new Error(data?.error?.message || "Search API gagal.");
+  }
+
+  return (data.items || [])
+    .filter(item=>item.id?.videoId)
+    .map(item=>({
+      id:`yt-${item.id.videoId}`,
+      youtubeId:item.id.videoId,
+      title:item.snippet?.title || "Untitled",
+      artist:item.snippet?.channelTitle || "YouTube",
+      album:"YouTube",
+      duration:0,
+      cover:item.snippet?.thumbnails?.high?.url ||
+            item.snippet?.thumbnails?.medium?.url ||
+            item.snippet?.thumbnails?.default?.url ||
+            fallbackCover
+    }));
 }
 
 let searchTimer = null;
+
+async function runSearch(query){
+  if(!query){
+    state.tracks = [];
+    renderCards([]);
+    setStatus("RAY Player siap",true);
+    return;
+  }
+
+  if(!state.youtubeApiKey){
+    renderCards([]);
+    setStatus("API key belum diatur",false);
+    toast("Masukkan YouTube API key di ⚙ Settings.");
+    openSettings();
+    return;
+  }
+
+  try{
+    setStatus("Mencari di YouTube…",true);
+    const results = await searchMusic(query);
+    state.tracks = results;
+    renderCards(results);
+    setStatus(results.length ? "Hasil YouTube siap" : "Tidak ada hasil",true);
+  }catch(error){
+    console.error(error);
+
+    if(error.message === "YOUTUBE_API_KEY_MISSING"){
+      toast("API key YouTube belum diatur.");
+      openSettings();
+    }else if(error.message.startsWith("API_FORBIDDEN:")){
+      toast("API ditolak (403). Cek restriction, API enabled, dan API key.");
+      setStatus("YouTube API ditolak",false);
+    }else{
+      toast(error.message || "Search gagal.");
+      setStatus("Search gagal",false);
+    }
+    renderCards([]);
+  }
+}
 
 $("search").addEventListener("input",()=>{
   const query = $("search").value.trim();
   clearTimeout(searchTimer);
 
   if(!query){
-    state.tracks = [...demoTracks];
-    renderCards(state.tracks);
+    state.tracks = [];
+    renderCards([]);
     return;
   }
 
-  searchTimer = setTimeout(async()=>{
-    try{
-      setStatus("Mencari musik…",true);
-      const results = await searchMusic(query);
-      state.tracks = results;
-      renderCards(results);
-      setStatus("RAY Player siap",true);
-    }catch(error){
-      console.error(error);
-      setStatus("Search source belum tersedia",false);
-      toast("Belum ada backend/API musik yang terhubung.");
-      renderCards([]);
-    }
-  },350);
+  searchTimer = setTimeout(()=>runSearch(query),450);
+});
+
+$("search").addEventListener("keydown",event=>{
+  if(event.key === "Enter"){
+    event.preventDefault();
+    clearTimeout(searchTimer);
+    runSearch($("search").value.trim());
+  }
 });
 
 $("focusSearch").addEventListener("click",()=>{
@@ -853,66 +959,62 @@ $("mobileSearch").addEventListener("click",()=>{
   window.scrollTo({top:0,behavior:"smooth"});
 });
 
-$("demoBtn").addEventListener("click",()=>{
-  if(!state.tracks.length) state.tracks = [...demoTracks];
-  playTrack(state.tracks[0]);
-});
+$("demoBtn").addEventListener("click",openSettings);
 
 $("playBtn").addEventListener("click",togglePlay);
 $("nextBtn").addEventListener("click",next);
 $("prevBtn").addEventListener("click",previous);
 
 $("volume").addEventListener("input",e=>{
-  audio.volume = Number(e.target.value);
-  $("muteBtn").textContent = audio.volume === 0 ? "🔇" : "🔊";
+  const volume = Number(e.target.value);
+  if(state.playerReady){
+    state.ytPlayer.setVolume(volume * 100);
+  }
+  if(volume > 0) state.muted = false;
+  $("muteBtn").textContent = volume === 0 ? "🔇" : "🔊";
 });
 
 $("muteBtn").addEventListener("click",()=>{
-  if(audio.volume > 0){
-    audio.dataset.previousVolume = audio.volume;
-    audio.volume = 0;
-    $("volume").value = 0;
+  if(!state.playerReady) return;
+
+  if(!state.muted){
+    state.ytPlayer.mute();
+    state.muted = true;
     $("muteBtn").textContent = "🔇";
   }else{
-    const restored = Number(audio.dataset.previousVolume || .8);
-    audio.volume = restored;
-    $("volume").value = restored;
-    $("muteBtn").textContent = "🔊";
+    state.ytPlayer.unMute();
+    state.muted = false;
+    const volume = Number($("volume").value);
+    state.ytPlayer.setVolume(volume * 100);
+    $("muteBtn").textContent = volume === 0 ? "🔇" : "🔊";
   }
 });
 
 $("progress").addEventListener("input",e=>{
-  if(!Number.isFinite(audio.duration)) return;
-  audio.currentTime = (Number(e.target.value) / 1000) * audio.duration;
+  if(!state.playerReady) return;
+  const duration = state.ytPlayer.getDuration();
+  if(!duration) return;
+  state.ytPlayer.seekTo((Number(e.target.value)/1000)*duration,true);
 });
 
-audio.addEventListener("timeupdate",()=>{
-  if(Number.isFinite(audio.duration)){
+setInterval(()=>{
+  if(!state.playerReady || !state.ytPlayer) return;
+
+  const duration = state.ytPlayer.getDuration();
+  const current = state.ytPlayer.getCurrentTime();
+
+  if(Number.isFinite(duration) && duration > 0){
     $("progress").disabled = false;
-    $("progress").value = (audio.currentTime / audio.duration) * 1000;
-    $("time").textContent =
-      `${formatTime(audio.currentTime)} / ${formatTime(audio.duration)}`;
+    $("progress").value = (current/duration)*1000;
+    $("time").textContent = `${formatTime(current)} / ${formatTime(duration)}`;
+
+    const track = getCurrentTrack();
+    if(track && !track.duration) {
+      track.duration = duration;
+      renderQueue();
+    }
   }
-});
-
-audio.addEventListener("loadedmetadata",()=>{
-  const track = state.queue[state.currentIndex];
-  if(track) track.duration = audio.duration;
-  updatePlayer();
-});
-
-audio.addEventListener("play",()=>{
-  state.playing = true;
-  updatePlayer();
-  setStatus("Sedang memutar",true);
-});
-
-audio.addEventListener("pause",()=>{
-  state.playing = false;
-  updatePlayer();
-});
-
-audio.addEventListener("ended",next);
+},500);
 
 $("themeBtn").addEventListener("click",()=>{
   const root = document.documentElement;
@@ -936,6 +1038,11 @@ document.querySelectorAll(".chip").forEach(chip=>{
   chip.addEventListener("click",()=>{
     document.querySelectorAll(".chip").forEach(x=>x.classList.remove("active"));
     chip.classList.add("active");
+
+    const query = chip.textContent.trim();
+    if(["Untuk Kamu"].includes(query)) return;
+    $("search").value = query;
+    runSearch(query);
   });
 });
 
@@ -948,41 +1055,49 @@ document.querySelectorAll(".mobile-nav [data-scroll]").forEach(btn=>{
   });
 });
 
-/* Simple provider settings */
-$("statusbar")?.addEventListener?.("click",()=>{});
-
 function openSettings(){
-  $("apiBase").value = state.apiBase;
+  $("youtubeApiKey").value = state.youtubeApiKey;
   $("settingsModal").classList.add("show");
 }
+
 function closeSettings(){
   $("settingsModal").classList.remove("show");
 }
+
+$("settingsBtn").addEventListener("click",openSettings);
+$("statusbar").addEventListener("click",openSettings);
 $("closeModal").addEventListener("click",closeSettings);
 $("cancelSettings").addEventListener("click",closeSettings);
-$("saveSettings").addEventListener("click",()=>{
-  state.apiBase = $("apiBase").value.trim();
-  if(state.apiBase) localStorage.setItem("ray_music_api",state.apiBase);
-  else localStorage.removeItem("ray_music_api");
-  $("providerText").textContent =
-    state.apiBase ? `Music source: ${state.apiBase}` : "Music source: belum dikonfigurasi";
-  closeSettings();
-  toast(state.apiBase ? "Music source disimpan." : "Music source dikosongkan.");
-});
 
-$("themeBtn").addEventListener("contextmenu",e=>{
-  e.preventDefault();
-  openSettings();
+$("saveSettings").addEventListener("click",()=>{
+  state.youtubeApiKey = $("youtubeApiKey").value.trim();
+
+  if(state.youtubeApiKey){
+    localStorage.setItem("ray_youtube_key",state.youtubeApiKey);
+    $("providerText").textContent = "Music source: YouTube";
+    setStatus("YouTube API siap",true);
+    toast("YouTube API key disimpan.");
+  }else{
+    localStorage.removeItem("ray_youtube_key");
+    $("providerText").textContent = "Music source: YouTube belum dikonfigurasi";
+    setStatus("API key belum diatur",false);
+    toast("API key dikosongkan.");
+  }
+
+  closeSettings();
 });
 
 /* Initial state */
-state.tracks = [...demoTracks];
-renderCards(state.tracks);
+renderCards([]);
 renderQueue();
 updatePlayer();
 $("providerText").textContent =
-  state.apiBase ? `Music source: ${state.apiBase}` : "Music source: belum dikonfigurasi";
-</script>
+  state.youtubeApiKey ? "Music source: YouTube" : "Music source: YouTube belum dikonfigurasi";
 
+if(window.YT && window.YT.Player){
+  state.ytReady = true;
+  createYouTubePlayer();
+}
+</script>
 </body>
 </html>
